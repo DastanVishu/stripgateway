@@ -27,7 +27,6 @@ app.use(bodyParser.json());
 
 app.post("/api/ccs", async (req, res) => {
  try {
-    console.log(req.body)
     // const session = await stripe.checkout.sessions.create({
     //     payment_method_types: ["card"],
     //     line_item:[
@@ -48,18 +47,32 @@ app.post("/api/ccs", async (req, res) => {
     // })
     const session = await stripe.paymentIntents.create({
         amount: 1099,
-        currency: 'usd',
+        currency: 'inr',
         payment_method_types: ['card'],
+        // payment_method_types: ['card'],
         metadata: {
           order_id: '6735',
         },
+        description: 'Software development services',
+        shipping: {
+            name: 'Jenny Rosen',
+            address: {
+              line1: '510 Townsend St',
+              postal_code: '98140',
+              city: 'San Francisco',
+              state: 'CA',
+              country: 'US',
+            },
+        },
       });
 
-    console.log(session);
+    console.log(session.client_secret);
     
-    res.status(200).json({ 
+    return res.status(200).json({ 
+        success: true,
         msg: "working now....",
-        id: session.id
+        id: session.id,
+        client_secret: session.client_secret
     });
  } catch (error) {
     res.status(400).json({ error: error });
